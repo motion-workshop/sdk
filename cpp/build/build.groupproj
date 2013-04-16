@@ -1,0 +1,46 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{a241aa53-0668-4a95-a8d6-7fbeb4542251}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="libMotionSDK.cbproj" />
+    <Projects Include="test.cbproj">
+      <Dependencies>libMotionSDK.cbproj</Dependencies>
+    </Projects>
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="libMotionSDK">
+    <MSBuild Projects="libMotionSDK.cbproj" Targets="" />
+  </Target>
+  <Target Name="libMotionSDK:Clean">
+    <MSBuild Projects="libMotionSDK.cbproj" Targets="Clean" />
+  </Target>
+  <Target Name="libMotionSDK:Make">
+    <MSBuild Projects="libMotionSDK.cbproj" Targets="Make" />
+  </Target>
+  <Target Name="test" DependsOnTargets="libMotionSDK">
+    <MSBuild Projects="test.cbproj" Targets="" />
+  </Target>
+  <Target Name="test:Clean" DependsOnTargets="libMotionSDK:Clean">
+    <MSBuild Projects="test.cbproj" Targets="Clean" />
+  </Target>
+  <Target Name="test:Make" DependsOnTargets="libMotionSDK:Make">
+    <MSBuild Projects="test.cbproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="libMotionSDK;test" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="libMotionSDK:Clean;test:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="libMotionSDK:Make;test:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>

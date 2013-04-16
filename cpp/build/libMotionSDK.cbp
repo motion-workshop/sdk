@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libMotionSDK" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="Debug\libMotionSDK" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="Debug" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_SCL_SECURE_NO_DEPRECATE" />
+					<Add option="-W" />
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory=".." />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory=".." />
+				</ResourceCompiler>
+			</Target>
+			<Target title="Release Win32">
+				<Option output="Release\libMotionSDK" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="Release" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_SCL_SECURE_NO_DEPRECATE" />
+					<Add option="-W" />
+					<Add directory=".." />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory=".." />
+				</ResourceCompiler>
+			</Target>
+		</Build>
+		<Unit filename="..\Client.hpp" />
+		<Unit filename="..\File.hpp" />
+		<Unit filename="..\Format.hpp" />
+		<Unit filename="..\LuaConsole.hpp" />
+		<Unit filename="..\src\Client.cpp" />
+		<Unit filename="..\src\File.cpp" />
+		<Unit filename="..\src\Format.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

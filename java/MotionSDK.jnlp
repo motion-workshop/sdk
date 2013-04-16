@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://www.motionnode.com/tools/sdk/java/" href="MotionSDK.jnlp">
+ <information>
+  <title>Motion Software Development Kit (SDK)</title>
+  <vendor>Motion Workshop</vendor>
+  <homepage href="http://www.motionnode.com/"/>
+  <description>Current build of the Motion Software Development Kit (SDK).</description>
+  <offline-allowed/>
+ </information>
+ <security>
+  <all-permissions/>
+ </security>
+ <resources>
+  <j2se version="1.5+"/>
+  <jar href="MotionSDK.jar"/>
+ </resources>
+ <component-desc/>
+</jnlp>

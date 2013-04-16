@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test.csproj", "{EAFCCD3C-9D6F-42BF-B946-143A657FB113}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81D334E0-D08B-43A7-ACC6-CFF166102B67} = {81D334E0-D08B-43A7-ACC6-CFF166102B67}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionSDK", "MotionSDK.csproj", "{81D334E0-D08B-43A7-ACC6-CFF166102B67}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAFCCD3C-9D6F-42BF-B946-143A657FB113}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAFCCD3C-9D6F-42BF-B946-143A657FB113}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAFCCD3C-9D6F-42BF-B946-143A657FB113}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAFCCD3C-9D6F-42BF-B946-143A657FB113}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81D334E0-D08B-43A7-ACC6-CFF166102B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81D334E0-D08B-43A7-ACC6-CFF166102B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81D334E0-D08B-43A7-ACC6-CFF166102B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81D334E0-D08B-43A7-ACC6-CFF166102B67}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
