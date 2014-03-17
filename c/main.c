@@ -3,7 +3,7 @@
   @author  Luke Tokheim, luke@motionnode.com
   @version 2.0
 
-  (C) Copyright Motion Workshop 2012. All rights reserved.
+  (C) Copyright Motion Workshop 2013. All rights reserved.
 
   The coded instructions, statements, computer programs, and/or related
   material (collectively the "Data") in these files contain unpublished
