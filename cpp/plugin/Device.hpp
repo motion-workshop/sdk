@@ -1,20 +1,32 @@
 /*
   @file    tools/sdk/cpp/plugin/Device.hpp
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.0
+  @version 2.2
 
-  (C) Copyright Motion Workshop 2013. All rights reserved.
+  Copyright (c) 2015, Motion Workshop
+  All rights reserved.
 
-  The coded instructions, statements, computer programs, and/or related
-  material (collectively the "Data") in these files contain unpublished
-  information proprietary to Motion Workshop, which is protected by
-  US federal copyright law and by international treaties.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-  The Data may not be disclosed or distributed to third parties, in whole
-  or in part, without the prior written consent of Motion Workshop.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-  The Data is provided "as is" without express or implied warranty, and
-  with no claim as to its suitability for any purpose.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef __MOTION_SDK_PLUGIN_DEVICE_HPP_
 #define __MOTION_SDK_PLUGIN_DEVICE_HPP_
