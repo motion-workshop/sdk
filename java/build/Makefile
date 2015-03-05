@@ -6,7 +6,7 @@
 #
 # @file    tools/sdk/java/build/Makefile
 # @author  Luke Tokheim, luke@motionnode.com
-# @version 2.0
+# @version 2.2
 #
 NAME     = MotionSDK.jar
 DEBUG    = no
