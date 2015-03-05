@@ -350,7 +350,11 @@ public:
     {
       boost::xtime timestamp;
       {
+#if BOOST_VERSION < 105000
+        boost::xtime_get(&timestamp, boost::TIME_UTC);
+#else
         boost::xtime_get(&timestamp, boost::TIME_UTC_);
+#endif // BOOST_VERSION
         timestamp.sec += time_out_second;
       }
 
