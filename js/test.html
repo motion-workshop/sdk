@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Motion SDK Test</title>
+</head>
+<body>
+<h1>Motion.Client</h1>
+<div id="display"></div>
+
+<script type="text/javascript" src="motion.sdk.js"></script>
+
+<script type="text/javascript">
+var name_map = null;
+var buffer = null;
+
+function display() {
+  if (name_map && buffer) {
+    var element = document.getElementById("display");
+    if (element) {
+      for (var i = 0; i < name_map.length; ++i) {
+        // 8 elements per channel.
+        // [Local quaternion, Positional constraint]
+        // [qw qx qy qz], [cw cx cy cz]
+        var base = i * 8;
+        element.innerHTML = [
+          name_map[i].id,
+          buffer[base + 0],
+          buffer[base + 1],
+          buffer[base + 2],
+          buffer[base + 3],
+          buffer[base + 4],
+          buffer[base + 5],
+          buffer[base + 6],
+          buffer[base + 7]
+        ].join("<br>");
+
+        break;
+      }
+    }
+  }
+}
+
+function update_json(data) {
+  if (data) {
+    name_map = JSON.parse(data).node;
+  } else {
+    name_map = null;
+  }
+}
+
+function update(data) {
+  if (data) {
+    buffer = new Float32Array(data);
+  } else {
+    buffer = null;
+  }
+
+  display();
+}
+</script>
+
+<script type="text/javascript">
+  var client = new Motion.Client();
+  client.readData(function(data) {
+    update(data);
+  }, function(json) {
+    update_json(json);
+  });
+</script>
+
+</body>
+</html>
