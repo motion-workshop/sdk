@@ -4,30 +4,40 @@
 
   @file    tools/sdk/cs/Client.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.0
+  @version 2.2
 
-  (C) Copyright Motion Workshop 2013. All rights reserved.
+  Copyright (c) 2015, Motion Workshop
+  All rights reserved.
 
-  The coded instructions, statements, computer programs, and/or related
-  material (collectively the "Data") in these files contain unpublished
-  information proprietary to Motion Workshop, which is protected by
-  US federal copyright law and by international treaties.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-  The Data may not be disclosed or distributed to third parties, in whole
-  or in part, without the prior written consent of Motion Workshop.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-  The Data is provided "as is" without express or implied warranty, and
-  with no claim as to its suitability for any purpose.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Motion
-{
-  namespace SDK
-  {
+namespace Motion {
+  namespace SDK {
     /**
       Implements a simple socket based data client and the Motion Service
       stream binary message protocol. Provide a simple interface to
@@ -78,8 +88,7 @@ namespace Motion
       }
       @endcode
     */
-    public class Client
-    {
+    public class Client {
       /**
         @param   host IP address of remote host, the empty string
                  defaults to "127.0.0.1"
@@ -91,54 +100,50 @@ namespace Motion
         @throws  std::runtime_error if the client connection fails for
                  any reason
        */
-      public Client(String host, int port)
-      {
-        if (0 == host.Length)
-        {
+      public Client(String host, int port) {
+        if (0 == host.Length) {
           host = DefaultAddress;
         }
-        if (port < 0)
-        {
+        if (port < 0) {
           port = 0;
         }
 
+        try {
+          Socket socket = null;
+          IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
+          foreach (IPAddress ipAddress in ipHostInfo.AddressList) {
+            IPEndPoint ipe = new IPEndPoint(ipAddress, port);
+            if (ProtocolFamily.InterNetworkV6.ToString() == ipe.AddressFamily.ToString()) {
+              continue;
+            }
 
-        Socket socket = null;
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
-        foreach (IPAddress ipAddress in ipHostInfo.AddressList)
-        {
-          IPEndPoint ipe = new IPEndPoint(ipAddress, port);
-          if (ProtocolFamily.InterNetworkV6.ToString() == ipe.AddressFamily.ToString())
-          {
-            continue;
+            Socket tempSocket = new Socket(
+              ipe.AddressFamily,
+              SocketType.Stream,
+              ProtocolType.Tcp);
+
+            tempSocket.Connect(ipe);
+            if (tempSocket.Connected) {
+              socket = tempSocket;
+              break;
+            }
           }
 
-          Socket tempSocket = new Socket(
-            ipe.AddressFamily,
-            SocketType.Stream,
-            ProtocolType.Tcp);
+          if ((null != socket) && socket.Connected) {
+            socket.NoDelay = true;
+            m_socket = socket;
+            m_connected = true;
 
-          tempSocket.Connect(ipe);
-          if (tempSocket.Connected)
-          {
-            socket = tempSocket;
-            break;
+            // Read the first message. This is an XML
+            // description of the service.
+            m_socket.ReceiveTimeout = TimeOutWaitForData * 1000;
+            byte[] message = receive();
+            if (message.Length > 0) {
+              m_description = Encoding.UTF8.GetString(message, 0, message.Length);
+            }
           }
-        }
-
-        if ((null != socket) && socket.Connected)
-        {
-          socket.NoDelay = true;
-          m_socket = socket;
-
-          // Read the first message. This is an XML
-          // description of the service.
-          m_socket.ReceiveTimeout = TimeOutWaitForData * 1000;
-          byte[] message = receive();
-          if (message.Length > 0)
-          {
-            m_description = Encoding.UTF8.GetString(message, 0, message.Length);
-          }
+        } catch (SocketException) {
+          close();
         }
       }
 
@@ -146,15 +151,8 @@ namespace Motion
         Does not throw any exceptions. Close this client connection
         if it is open.
       */
-      ~Client()
-      {
-        try
-        {
-          close();
-        }
-        catch (Exception)
-        {
-        }
+      ~Client() {
+        close();
       }
 
       /**
@@ -163,14 +161,17 @@ namespace Motion
         @throws  Exception if this client is not connected
                  or the close procedure fails for any reason
       */
-      public void close()
-      {
-        if ((null != m_socket) && m_socket.Connected)
-        {
-          m_socket.Shutdown(SocketShutdown.Both);
-          m_socket.Close();
+      public void close() {
+        if (null != m_socket) {
+          try {
+            m_socket.Shutdown(SocketShutdown.Both);
+            m_socket.Close();
+          } catch (SocketException) {
+          }
 
           m_socket = null;
+          m_connected = false;
+          m_description = "";
           m_xml_string = "";
         }
       }
@@ -178,9 +179,8 @@ namespace Motion
       /**
         Returns true if the current connection is active.
       */
-      public bool isConnected()
-      {
-        if ((null != m_socket) && m_socket.Connected) {
+      public bool isConnected() {
+        if ((null != m_socket) && m_connected) {
           return true;
         } else {
           return false;
@@ -195,20 +195,15 @@ namespace Motion
          @return a single sample of data, or null if the
          incoming data is invalid
       */
-      public byte[] readData(int time_out_second)
-      {
+      public byte[] readData(int time_out_second) {
         byte[] data = null;
         if (isConnected()) {
           // Set receive time out for this set of calls.
-          if (time_out_second < 0)
-          {
-            if (TimeOutReadData * 1000 != m_socket.ReceiveTimeout)
-            {
+          if (time_out_second < 0) {
+            if (TimeOutReadData * 1000 != m_socket.ReceiveTimeout) {
               m_socket.ReceiveTimeout = TimeOutReadData * 1000;
             }
-          }
-          else
-          {
+          } else {
             m_socket.ReceiveTimeout = time_out_second * 1000;
           }
 
@@ -217,15 +212,13 @@ namespace Motion
           // Consume any XML messages. Store the most recent one.
           if ((null != message)
             && (message.Length >= XMLMagic.Length)
-            && (XMLMagic == Encoding.UTF8.GetString(message, 0, XMLMagic.Length)))
-          {
+            && (XMLMagic == Encoding.UTF8.GetString(message, 0, XMLMagic.Length))) {
             m_xml_string = Encoding.UTF8.GetString(message, 0, message.Length);
 
             message = receive();
           }
 
-          if ((null != message) && (message.Length > 0))
-          {
+          if ((null != message) && (message.Length > 0)) {
             data = message;
           }
 
@@ -237,8 +230,7 @@ namespace Motion
       /**
          @ref Client#readData(-1)
       */
-      public byte[] readData()
-      {
+      public byte[] readData() {
         return readData(-1);
       }
 
@@ -251,30 +243,22 @@ namespace Motion
                  negative value specifies default time out
         @pre     this object has an open socket connection
       */
-      public bool waitForData(int time_out_second)
-      {
+      public bool waitForData(int time_out_second) {
         bool result = false;
 
-        if (isConnected())
-        {
+        if (isConnected()) {
           // Set receive time out for this set of calls.
-          if (time_out_second < 0)
-          {
-            if (TimeOutReadData * 1000 != m_socket.ReceiveTimeout)
-            {
+          if (time_out_second < 0) {
+            if (TimeOutReadData * 1000 != m_socket.ReceiveTimeout) {
               m_socket.ReceiveTimeout = TimeOutWaitForData * 1000;
             }
-          }
-          else
-          {
+          } else {
             m_socket.ReceiveTimeout = time_out_second * 1000;
           }
 
           byte[] message = receive();
-          if ((null != message) && (message.Length > 0))
-          {
-            if ((message.Length >= XMLMagic.Length) && (XMLMagic == Encoding.UTF8.GetString(message, 0, XMLMagic.Length)))
-            {
+          if ((null != message) && (message.Length > 0)) {
+            if ((message.Length >= XMLMagic.Length) && (XMLMagic == Encoding.UTF8.GetString(message, 0, XMLMagic.Length))) {
               m_xml_string = Encoding.UTF8.GetString(message, 0, message.Length);
             }
 
@@ -288,8 +272,7 @@ namespace Motion
       /**
         @ref Client#waitForData(-1)
       */
-      public bool waitForData()
-      {
+      public bool waitForData() {
         return waitForData(-1);
       }
 
@@ -302,37 +285,41 @@ namespace Motion
                  negative value specifies default time out
         @pre     this object has an open socket connection
       */
-      public bool writeData(byte[] data, int time_out_second)
-      {
+      public bool writeData(byte[] data, int time_out_second) {
         bool result = false;
 
-        if (isConnected() && (null != data) && (data.Length > 0))
-        {
+        if (isConnected() && (null != data) && (data.Length > 0)) {
           // Set receive time out for this set of calls.
-          if (time_out_second < 0)
-          {
-            if (TimeOutWriteData * 1000 != m_socket.SendTimeout)
-            {
+          if (time_out_second < 0) {
+            if (TimeOutWriteData * 1000 != m_socket.SendTimeout) {
               m_socket.SendTimeout = TimeOutWriteData * 1000;
             }
-          }
-          else
-          {
+          } else {
             m_socket.SendTimeout = time_out_second * 1000;
           }
 
           byte[] header = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(data.Length));
-          if (null != header)
-          {
+          if (null != header) {
             byte[] buffer = new byte[header.Length + data.Length];
             {
               System.Array.Copy(header, 0, buffer, 0, header.Length);
               System.Array.Copy(data, 0, buffer, header.Length, data.Length);
             }
 
-            if (buffer.Length == m_socket.Send(buffer))
-            {
-              result = true;
+            try {
+              int num_sent = m_socket.Send(buffer);
+              if (buffer.Length == num_sent) {
+                result = true;
+              } else if (0 == num_sent) {
+                close();
+              }
+            } catch (SocketException e) {
+              if ((SocketError.TimedOut == e.SocketErrorCode) ||
+                  (SocketError.WouldBlock == e.SocketErrorCode)) {
+                // OK, we can try again later.
+              } else {
+                close();
+              }
             }
           }
         }
@@ -343,8 +330,7 @@ namespace Motion
       /**
         @ref Client#writeData(byte[], int)
       */
-      public bool writeData(byte[] data)
-      {
+      public bool writeData(byte[] data) {
         return writeData(data, -1);
       }
 
@@ -354,45 +340,61 @@ namespace Motion
        
         @ref Client#writeData(byte[], int)
       */
-      public bool writeData(String message, int time_out_second)
-      {
+      public bool writeData(String message, int time_out_second) {
         return writeData(Encoding.ASCII.GetBytes(message), -1);
       }
 
       /**
         @ref Client#writeData(String, int)
       */
-      public bool writeData(String message)
-      {
+      public bool writeData(String message) {
         return writeData(message, -1);
+      }
+
+      /**
+       Accessor for the last XML message received.
+       */
+      public String getXMLString() {
+        return m_xml_string;
+      }
+
+      /**
+       Accessor for the internal socket class.
+       */
+      public Socket getSocket() {
+        return m_socket;
       }
 
       /**
        Implements the actual message reading. First get the message length
        header integer = N. Then read N bytes of raw data and return them.
        */
-      private byte[] receive()
-      {
+      private byte[] receive() {
         byte[] data = null;
 
-        if (isConnected())
-        {
-          byte[] buffer = new byte[2048];
-          int message_length = 0;
-          if (sizeof(int) == m_socket.Receive(buffer, sizeof(int), SocketFlags.None))
-          {
-            // Network order message length integer header.
-            message_length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, 0));
-          }
-
-          if ((message_length > 0) && (message_length < buffer.Length))
-          {
-            // Read the binary message.
-            if (message_length == m_socket.Receive(buffer, message_length, SocketFlags.None))
-            {
-              data = new byte[message_length];
-              System.Array.Copy(buffer, 0, data, 0, message_length);
+        try {
+          if (isConnected()) {
+            byte[] buffer = new byte[sizeof(int)];
+            int message_length = 0;
+            if (sizeof(int) == m_socket.Receive(buffer, sizeof(int), SocketFlags.None)) {
+              // Network order message length integer header.
+              message_length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, 0));
             }
+
+            if ((message_length > 0) && (message_length <= MaximumMessageLength)) {
+              // Read the binary message.
+              data = new byte[message_length];
+              if (message_length != m_socket.Receive(data, message_length, SocketFlags.None)) {
+                data = null;
+              }
+            } else if (0 == message_length) {
+              close();
+            }
+          }
+        } catch (SocketException e) {
+          if ((SocketError.TimedOut == e.SocketErrorCode) ||
+              (SocketError.WouldBlock == e.SocketErrorCode)) {
+            data = null;
           }
         }
 
@@ -401,6 +403,9 @@ namespace Motion
 
       /** Built in Socket class. Does most of the work. */
       private Socket m_socket = null;
+
+      /** Keep track of our own connection state that does supports timeouts. */
+      private Boolean m_connected = false;
 
       /** String description of the remote service. */
       private String m_description = "";
@@ -435,6 +440,12 @@ namespace Motion
         Detect XML message with the following header bytes.
       */
       private const String XMLMagic = "<?xml";
+
+      /**
+        Set a limit on the incoming message size. Assume that there is
+        something wrong if a message is "too long".
+      */
+      private const int MaximumMessageLength = 65535;
     } // class Client
 
   } // namespace SDK

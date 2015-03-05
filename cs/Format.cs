@@ -4,28 +4,38 @@
 
   @file    tools/sdk/cs/Format.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.0
+  @version 2.2
 
-  (C) Copyright Motion Workshop 2012. All rights reserved.
+  Copyright (c) 2015, Motion Workshop
+  All rights reserved.
 
-  The coded instructions, statements, computer programs, and/or related
-  material (collectively the "Data") in these files contain unpublished
-  information proprietary to Motion Workshop, which is protected by
-  US federal copyright law and by international treaties.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-  The Data may not be disclosed or distributed to third parties, in whole
-  or in part, without the prior written consent of Motion Workshop.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-  The Data is provided "as is" without express or implied warranty, and
-  with no claim as to its suitability for any purpose.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
 using System.Collections.Generic;
 
-namespace Motion
-{
-  namespace SDK
-  {
+namespace Motion {
+  namespace SDK {
     /**
     The Format class methods read a single binary message from a Motion Service
     stream and returns an object representation of that message. This is
@@ -57,8 +67,7 @@ namespace Motion
     }
     @endcode
     */ 
-    public static class Format
-    {
+    public static class Format {
       /**
         Motion Service streams send a list of data elements. The @ref Format
         functions create a map from integer id to array packed data for each
@@ -74,8 +83,7 @@ namespace Motion
         and provides a @ref PreviewElement#getEuler method to access
         an array of <tt>{x, y, z}</tt> Euler angles.
       */
-      public abstract class Element<T>
-      {
+      public abstract class Element<T> {
         /**
           Constructor is protected. Only allow child classes to call this.
 
@@ -83,10 +91,8 @@ namespace Motion
           @param length valid length of the <tt>data</tt> array
           @pre <tt>data.Length == length</tt>
         */
-        protected Element(T[] data, int length)
-        {
-          if ((data.Length == length) || (0 == length))
-          {
+        protected Element(T[] data, int length) {
+          if ((data.Length == length) || (0 == length)) {
             m_data = data;
           }
         }
@@ -102,11 +108,9 @@ namespace Motion
           <tt>{m_data[i] ... m_data[i+element_length]}</tt> if there are valid
           values available or zeros otherwise
         */
-        protected T[] getData(int start, int length)
-        {
+        protected T[] getData(int start, int length) {
           T[] result = new T[length];
-          if ((null != m_data) && (start + length <= m_data.Length))
-          {
+          if ((null != m_data) && (start + length <= m_data.Length)) {
             System.Array.Copy(m_data, start, result, 0, length);
           }
           return result;
@@ -114,8 +118,7 @@ namespace Motion
 
         protected T[] m_data = null;
 
-        public T[] access()
-        {
+        public T[] access() {
           return m_data;
         }
       } // class Element
@@ -127,8 +130,7 @@ namespace Motion
         <tt>N</tt> data elements. Each data element is an array of <tt>M</tt>
         single precision floating point numbers.
       */
-      public class ConfigurableElement : Element<float>
-      {
+      public class ConfigurableElement : Element<float> {
         public const int Length = 0;
 
         /**
@@ -146,16 +148,14 @@ namespace Motion
         /**
           Get a single channel entry at specified index.
         */
-        public float value(int index)
-        {
+        public float value(int index) {
           return access()[index];
         }
 
         /**
           Convenience method. Size accessor.
         */
-        public int size()
-        {
+        public int size() {
           return access().Length;
         }
 
@@ -163,8 +163,7 @@ namespace Motion
           Range accessor. In case the client application
           wants to slice up the data into logical parts.
         */
-        public float[] getRange(int start, int length)
-        {
+        public float[] getRange(int start, int length) {
           return getData(start, length);
         }
       } // class ConfigurableElement
@@ -180,8 +179,7 @@ namespace Motion
         id => [global quaternion, local quaternion, local euler, global acceleration]
         id => {Gqw, Gqx, Gqy, Gqz, Lqw, Lqx, Lqy, Lqz, rx, ry, rz, ax, ay, az}
       */
-      public class PreviewElement : Element<float>
-      {
+      public class PreviewElement : Element<float> {
         /**
            Total number of channels in the packed data array. 2 quaternions, 1 set
            of Euler angles, 1 set of translation channels.
@@ -216,8 +214,7 @@ namespace Motion
            in radians or <tt>null</tt> if there is no available data
            @see #getQuaternion
         */
-        public float[] getEuler()
-        {
+        public float[] getEuler() {
           return getData(8, 3);
         }
 
@@ -231,8 +228,7 @@ namespace Motion
            matrix in row-major order or the idenitity if there is no available data
            @see #getQuaternion
         */
-        public float[] getMatrix(bool local)
-        {
+        public float[] getMatrix(bool local) {
           return quaternion_to_R3_rotation(getQuaternion(local));
         }
 
@@ -246,14 +242,10 @@ namespace Motion
            unit length quaternion <code>q = w + x*i + y*j + z*k</code> or zeros
            if there is no available data
         */
-        public float[] getQuaternion(bool local)
-        {
-          if (local)
-          {
+        public float[] getQuaternion(bool local) {
+          if (local) {
             return getData(4, 4);
-          }
-          else
-          {
+          } else {
             return getData(0, 4);
           }
         }
@@ -266,8 +258,7 @@ namespace Motion
            acceleration channels specified in g or zeros if there is no
            available data
         */
-        public float[] getAccelerate()
-        {
+        public float[] getAccelerate() {
           return getData(11, 3);
         }
       } // class PreviewElement
@@ -282,8 +273,7 @@ namespace Motion
          id => [accelerometer, magnetometer, gyroscope]
          id => {ax, ay, az, mx, my, mz, gx, gy, gz}
       */
-      public class SensorElement : Element<float>
-      {
+      public class SensorElement : Element<float> {
         public const int Length = 3 * 3;
 
         /**
@@ -309,8 +299,7 @@ namespace Motion
            @return a three element array <code>{x, y, z}</code> of acceleration
            in <em>g</em>s or zeros if there is no available data
         */
-        public float[] getAccelerometer()
-        {
+        public float[] getAccelerometer() {
           return getData(0, 3);
         }
 
@@ -323,8 +312,7 @@ namespace Motion
            @return a three element array <code>{x, y, z}</code> of angular velocity
            in <code>degrees/second</code> or zeros if there is no available data
         */
-        public float[] getGyroscope()
-        {
+        public float[] getGyroscope() {
           return getData(6, 3);
         }
 
@@ -339,8 +327,7 @@ namespace Motion
            strength in <code>uT</code> (microtesla) or zeros if there is no
            available data
         */
-        public float[] getMagnetometer()
-        {
+        public float[] getMagnetometer() {
           return getData(3, 3);
         }
       } // class SensorElement
@@ -364,8 +351,7 @@ namespace Motion
          the server side.
          </p>
       */
-      public class RawElement : Element<short>
-      {
+      public class RawElement : Element<short> {
         public const int Length = 3 * 3;
 
         /**
@@ -391,8 +377,7 @@ namespace Motion
            @return a three element array <code>{x, y, z}</code> of raw
            accelerometer output or zeros if there is no available data
         */
-        public short[] getAccelerometer()
-        {
+        public short[] getAccelerometer() {
           return getData(0, 3);
         }
 
@@ -407,8 +392,7 @@ namespace Motion
            @return a three element array <code>{x, y, z}</code> of raw
            gyroscope output or zeros if there is no available data
         */
-        public short[] getGyroscope()
-        {
+        public short[] getGyroscope() {
           return getData(6, 3);
         }
 
@@ -423,33 +407,27 @@ namespace Motion
            @return a three element array <tt>{x, y, z}</tt> of raw
            magnetometer output or zeros if there is no available data
         */
-        public short[] getMagnetometer()
-        {
+        public short[] getMagnetometer() {
           return getData(3, 3);
         }
       } // class RawElement
 
 
-      public static IDictionary<int, ConfigurableElement> Configurable(byte[] data)
-      {
+      public static IDictionary<int, ConfigurableElement> Configurable(byte[] data) {
         IDictionary<int, ConfigurableElement> result = null;
         {
           // Use this to do most of the dirty work.
           IDictionary<int, float[]> map = IdToFloatArray(data, ConfigurableElement.Length);
-          if (map.Count > 0)
-          {
+          if (map.Count > 0) {
             result = new Dictionary<int, ConfigurableElement>();
-            foreach (KeyValuePair<int, float[]> itr in map)
-            {
+            foreach (KeyValuePair<int, float[]> itr in map) {
               result.Add(itr.Key, new ConfigurableElement(itr.Value));
             }
 
-            if (map.Count != result.Count)
-            {
+            if (map.Count != result.Count) {
               result.Clear();
             }
-            if (result.Count <= 0)
-            {
+            if (result.Count <= 0) {
               result = null;
             }
           }
@@ -458,26 +436,21 @@ namespace Motion
         return result;
       }
 
-      public static IDictionary<int, PreviewElement> Preview(byte[] data)
-      {
+      public static IDictionary<int, PreviewElement> Preview(byte[] data) {
         IDictionary<int, PreviewElement> result = null;
         {
           // Use this to do most of the dirty work.
           IDictionary<int, float[]> map = IdToFloatArray(data, PreviewElement.Length);
-          if (map.Count > 0)
-          {
+          if (map.Count > 0) {
             result = new Dictionary<int, PreviewElement>();
-            foreach (KeyValuePair<int, float[]> itr in map)
-            {
+            foreach (KeyValuePair<int, float[]> itr in map) {
               result.Add(itr.Key, new PreviewElement(itr.Value));
             }
 
-            if (map.Count != result.Count)
-            {
+            if (map.Count != result.Count) {
               result.Clear();
             }
-            if (result.Count <= 0)
-            {
+            if (result.Count <= 0) {
               result = null;
             }
           }
@@ -486,26 +459,21 @@ namespace Motion
         return result;
       }
 
-      public static IDictionary<int, SensorElement> Sensor(byte[] data)
-      {
+      public static IDictionary<int, SensorElement> Sensor(byte[] data) {
         IDictionary<int, SensorElement> result = null;
         {
           // Use this to do most of the dirty work.
           IDictionary<int, float[]> map = IdToFloatArray(data, SensorElement.Length);
-          if (map.Count > 0)
-          {
+          if (map.Count > 0) {
             result = new Dictionary<int, SensorElement>();
-            foreach (KeyValuePair<int, float[]> itr in map)
-            {
+            foreach (KeyValuePair<int, float[]> itr in map) {
               result.Add(itr.Key, new SensorElement(itr.Value));
             }
 
-            if (map.Count != result.Count)
-            {
+            if (map.Count != result.Count) {
               result.Clear();
             }
-            if (result.Count <= 0)
-            {
+            if (result.Count <= 0) {
               result = null;
             }
           }
@@ -514,26 +482,21 @@ namespace Motion
         return result;
       }
 
-      public static IDictionary<int, RawElement> Raw(byte[] data)
-      {
+      public static IDictionary<int, RawElement> Raw(byte[] data) {
         IDictionary<int, RawElement> result = null;
         {
           // Use this to do most of the dirty work.
           IDictionary<int, short[]> map = IdToShortArray(data, RawElement.Length);
-          if (map.Count > 0)
-          {
+          if (map.Count > 0) {
             result = new Dictionary<int, RawElement>();
-            foreach (KeyValuePair<int, short[]> itr in map)
-            {
+            foreach (KeyValuePair<int, short[]> itr in map) {
               result.Add(itr.Key, new RawElement(itr.Value));
             }
 
-            if (map.Count != result.Count)
-            {
+            if (map.Count != result.Count) {
               result.Clear();
             }
-            if (result.Count <= 0)
-            {
+            if (result.Count <= 0) {
               result = null;
             }
           }
@@ -555,32 +518,27 @@ namespace Motion
          @return a IDictionary<int, List<float>> collection
          representation of the input message
       */ 
-      private static IDictionary<int, float[]> IdToFloatArray(byte[] buffer, int length)
-      {
+      private static IDictionary<int, float[]> IdToFloatArray(byte[] buffer, int length) {
         // Use the Dictionary interface, behaves like the C++ std::map.
         IDictionary<int, float[]> result = new Dictionary<int, float[]>();
 
         // Loop while we have enough bytes to create a complete element.
         int itr = 0;
-        while ((itr < buffer.Length) && ((buffer.Length - itr) > sizeof(int)))
-        {
+        while ((itr < buffer.Length) && ((buffer.Length - itr) > sizeof(int))) {
           // Read the integer id for this element.
           int key = BitConverter.ToInt32(buffer, itr);
           itr += sizeof(int);
 
           int element_length = length;
-          if ((0 == element_length) && ((buffer.Length - itr) > sizeof(int)))
-          {
+          if ((0 == element_length) && ((buffer.Length - itr) > sizeof(int))) {
             element_length = BitConverter.ToInt32(buffer, itr);
             itr += sizeof(int);
           }
 
-          if ((element_length > 0) && ((buffer.Length - itr) >= element_length*sizeof(float)))
-          {
+          if ((element_length > 0) && ((buffer.Length - itr) >= element_length*sizeof(float))) {
             // Read the array of values for this element.
             float[] value = new float[element_length];
-            for (int i = 0; i < element_length; i++)
-            {
+            for (int i = 0; i < element_length; i++) {
               value[i] = BitConverter.ToSingle(buffer, itr);
               itr += sizeof(float);
             }
@@ -593,14 +551,12 @@ namespace Motion
 
         // If we did not consume all of the input bytes this is an
         // invalid message.
-        if (itr != buffer.Length)
-        {
+        if (itr != buffer.Length) {
           result.Clear();
         }
         // If there are no elements in the container, set it to null
         // to indicate an invalid message.
-        if (0 == result.Count)
-        {
+        if (0 == result.Count) {
           result = null;
         }
 
@@ -610,8 +566,7 @@ namespace Motion
       /**
         @ref see Format#IdToFloatArray
       */
-      private static IDictionary<int, short[]> IdToShortArray(byte[] buffer, int length)
-      {
+      private static IDictionary<int, short[]> IdToShortArray(byte[] buffer, int length) {
         // Use the Dictionary interface, behaves like the C++ std::map.
         IDictionary<int, short[]> result = new Dictionary<int, short[]>();
 
@@ -620,16 +575,14 @@ namespace Motion
         int element_size = sizeof(int) + sizeof(short) * length;
 
         int itr = 0;
-        while ((itr < buffer.Length) && (element_size <= (buffer.Length - itr)))
-        {
+        while ((itr < buffer.Length) && (element_size <= (buffer.Length - itr))) {
           // Read the integer id for this element.
           int key = BitConverter.ToInt32(buffer, itr);
           itr += sizeof(int);
 
           // Read the array of values for this element.
           short[] value = new short[length];
-          for (int i = 0; i < length; i++)
-          {
+          for (int i = 0; i < length; i++) {
             value[i] = BitConverter.ToInt16(buffer, itr);
             itr += sizeof(short);
           }
@@ -641,14 +594,12 @@ namespace Motion
 
         // If we did not consume all of the input bytes this is an
         // invalid message.
-        if (itr != buffer.Length)
-        {
+        if (itr != buffer.Length) {
           result.Clear();
         }
         // If there are no elements in the container, set it to null
         // to indicate an invalid message.
-        if (0 == result.Count)
-        {
+        if (0 == result.Count) {
           result = null;
         }
 
@@ -665,10 +616,8 @@ namespace Motion
          a 4-by-4 rotation matrix computed from the input quaternion or
          the identity matrix if the input quaternion has zero length
       */
-      private static float[] quaternion_to_R3_rotation(float[] q)
-      {
-        if ((null == q) || (4 != q.Length))
-        {
+      private static float[] quaternion_to_R3_rotation(float[] q) {
+        if ((null == q) || (4 != q.Length)) {
           return null;
         }
 
@@ -692,13 +641,11 @@ namespace Motion
 
         // Defaults to the identity matrix.
         float[] result = new float[16];
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
           result[4 * i + i] = 1f;
         }
 
-        if (norme_carre > 1e-6)
-        {
+        if (norme_carre > 1e-6) {
           result[0] = (aa + bb - cc - dd) / norme_carre;
           result[1] = 2 * (-ad + bc) / norme_carre;
           result[2] = 2 * (ac + bd) / norme_carre;
