@@ -1,30 +1,42 @@
 /**
-   Draw a coordinate system that defines the real-time orientation
-   of a single MotionNode IMU. Use the {@link Motion.SDK.Client} class
-   to read preview data from the remote host. Use the
-   {@link Motion.SDK.Format} class to access specific preview data
-   elements.
+  Draw a coordinate system that defines the real-time orientation
+  of a single MotionNode IMU. Use the {@link Motion.SDK.Client} class
+  to read preview data from the remote host. Use the
+  {@link Motion.SDK.Format} class to access specific preview data
+  elements.
 
-   Implemented in OpenGL layered on top of a Java Binding for the OpenGL
-   API (JOGL). The JOGL library is available at http://jogl.dev.java.net/
-   under the Berkeley Software Distribution (BSD) License.
+  Implemented in OpenGL layered on top of a Java Binding for the OpenGL
+  API (JOGL). The JOGL library is available at http://jogl.dev.java.net/
+  under the Berkeley Software Distribution (BSD) License.
 
-   @file    tools/sdk/java/example_jogl/ExampleJOGL.java
-   @author  Luke Tokheim, luke@motionnode.com
-   @version 2.0
+  @file    tools/sdk/java/example_jogl/ExampleJOGL.java
+  @author  Luke Tokheim, luke@motionnode.com
+  @version 2.2
 
-   (C) Copyright Motion Workshop 2013. All rights reserved.
+  Copyright (c) 2015, Motion Workshop
+  All rights reserved.
 
-   The coded instructions, statements, computer programs, and/or related
-   material (collectively the "Data") in these files contain unpublished
-   information proprietary to Motion Workshop, which is protected by
-   US federal copyright law and by international treaties.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-   The Data may not be disclosed or distributed to third parties, in whole
-   or in part, without the prior written consent of Motion Workshop.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-   The Data is provided "as is" without express or implied warranty, and
-   with no claim as to its suitability for any purpose.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 import Motion.SDK.Client;
 import Motion.SDK.Format;

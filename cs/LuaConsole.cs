@@ -1,28 +1,38 @@
 /**
   @file    tools/sdk/cs/LuaConsole.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.0
+  @version 2.2
 
-  (C) Copyright Motion Workshop 2013. All rights reserved.
+  Copyright (c) 2015, Motion Workshop
+  All rights reserved.
 
-  The coded instructions, statements, computer programs, and/or related
-  material (collectively the "Data") in these files contain unpublished
-  information proprietary to Motion Workshop, which is protected by
-  US federal copyright law and by international treaties.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-  The Data may not be disclosed or distributed to third parties, in whole
-  or in part, without the prior written consent of Motion Workshop.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-  The Data is provided "as is" without express or implied warranty, and
-  with no claim as to its suitability for any purpose.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
 using System.Text;
 
-namespace Motion
-{
-  namespace SDK
-  {
+namespace Motion {
+  namespace SDK {
     /**
     The LuaConsole class sends a Lua chunk to the Motion Serivce console, parses
     the result code, and returns the printed output. Requires an existing Client
@@ -43,18 +53,13 @@ namespace Motion
           " print('node.is_reading() == ', node.is_reading())"
         );
 
-      if (LuaConsole.ResultCode.Success == result.first)
-      {
+      if (LuaConsole.ResultCode.Success == result.first) {
         // Could be "node.is_reading = true\n" or
         // "node.is_reading = false\n".
         Console.WriteLine(result.second);
-      }
-      else if (LuaConsole.ResultCode.Continue == result.first)
-      {
+      } else if (LuaConsole.ResultCode.Continue == result.first) {
         Console.WriteLine("incomplete Lua chunk: " + result.second);
-      }
-      else
-      {
+      } else {
         Console.WriteLine("command failed: " + result.second);
       }
 
@@ -66,10 +71,8 @@ namespace Motion
     }
     @endcode
     */
-    public static class LuaConsole
-    {
-      public enum ResultCode
-      {
+    public static class LuaConsole {
+      public enum ResultCode {
         // The Lua chunk was successfully parsed and executed. The
         // printed results are in the result string.
         Success = 0,
@@ -83,8 +86,7 @@ namespace Motion
         Continue = 2
       }; // enum ResultCode
 
-      public class ResultType
-      {
+      public class ResultType {
         public ResultCode first = ResultCode.Failure;
         public String second = "";
       } // class ResultType
@@ -96,25 +98,20 @@ namespace Motion
       public static ResultType SendChunk(
         Client client,
         String chunk,
-        int time_out_second)
-      {
+        int time_out_second) {
         ResultType result = new ResultType();
 
-        if (client.writeData(chunk, time_out_second))
-        {
+        if (client.writeData(chunk, time_out_second)) {
           byte[] response = client.readData(time_out_second);
-          if ((null != response) && (response.Length > 0))
-          {
+          if ((null != response) && (response.Length > 0)) {
             // First character is the response code.
             byte code = response[0];
             if ((code >= (byte)ResultCode.Success)
-              && (code <= (byte)ResultCode.Continue))
-            {
+              && (code <= (byte)ResultCode.Continue)) {
               result.first = (ResultCode)code;
               // The rest of the message is any printed output from the
               // Lua environment.
-              if (response.Length > 1)
-              {
+              if (response.Length > 1) {
                 result.second =
                   Encoding.ASCII.GetString(
                     response,
@@ -128,8 +125,7 @@ namespace Motion
         return result;
       }
 
-      public static ResultType SendChunk(Client client, String chunk)
-      {
+      public static ResultType SendChunk(Client client, String chunk) {
         return SendChunk(client, chunk, -1);
       }
 

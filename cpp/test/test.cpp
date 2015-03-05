@@ -3,20 +3,32 @@
 
   @file    tools/sdk/cpp/test/test.cpp
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.0
+  @version 2.2
 
-  (C) Copyright Motion Workshop 2013. All rights reserved.
+  Copyright (c) 2015, Motion Workshop
+  All rights reserved.
 
-  The coded instructions, statements, computer programs, and/or related
-  material (collectively the "Data") in these files contain unpublished
-  information proprietary to Motion Workshop, which is protected by
-  US federal copyright law and by international treaties.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-  The Data may not be disclosed or distributed to third parties, in whole
-  or in part, without the prior written consent of Motion Workshop.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-  The Data is provided "as is" without express or implied warranty, and
-  with no claim as to its suitability for any purpose.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 #include <Client.hpp>
 #include <LuaConsole.hpp>
@@ -65,7 +77,7 @@ int test_Configurable(const std::string &host, const unsigned &port)
                           std::ios_base::binary | std::ios_base::in);
         if (fin.is_open()) {
           fin.seekg(0, std::ios_base::end);
-          int num_bytes = fin.tellg();
+          std::streamoff num_bytes = fin.tellg();
           fin.seekg(0, std::ios_base::beg);
 
           if (num_bytes > 0) {
@@ -80,6 +92,8 @@ int test_Configurable(const std::string &host, const unsigned &port)
 
       // Make a default definition here, in case we could not find our file.
       // Access the global quaternion and calibrated accelerometer streams.
+      // Refer to http://www.motionnode.com/tools/configurable.xml for a full
+      // list of the available channels.
       if (xml_definition.empty()) {
         std::string xml_string =
           "<?xml version=\"1.0\"?>"
@@ -348,34 +362,29 @@ int test_File()
 
 int main(int argc, char **argv)
 {
-  // Choose a remote host on the command line.
-  // Note that this must be an IP address or
-  // you will need to add a hostname lookup.
+  // Choose a remote host on the command line. Note that this must be an IP
+  // address or you will need to add a hostname lookup.
   std::string host;
   if (argc > 1) {
     host.assign(argv[1]);
   }
 
-  // LuaConsole class allows for remote control of the
-  // Motion Service. Run this test first since it
-  // will start reading from any available sensors.
-  test_LuaConsole(host, PortConsole);
+  // LuaConsole class allows for remote control of the Motion Service. Run
+  // this test first since it will start reading from any available sensors.
+  //test_LuaConsole(host, PortConsole);
 
-  // Configurable data service. New feature that
-  // allows all streams types to be read from one
-  // Client connection. The user selects that active
-  // channels at connect time.
+  // Configurable data service. Allows all streams types to be read from one
+  // Client connection. The user selects that active channels at connect time.
   test_Configurable(host, PortConfigurable);
 
-  // Regular SDK data stream access. Each service has
-  // its own port. Run a test of all three main data
-  // services.
-  test_Client(host, PortPreview);
-  test_Client(host, PortSensor);
-  test_Client(host, PortRaw);
+  // Regular SDK data stream access. Each service has its own port. Run a test
+  // of all three main data services.
+  //test_Client(host, PortPreview);
+  //test_Client(host, PortSensor);
+  //test_Client(host, PortRaw);
 
   // File class reads binary take files.
-  test_File();
+  //test_File();
 
   return 0;
 }
