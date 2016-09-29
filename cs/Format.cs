@@ -4,9 +4,9 @@
 
   @file    tools/sdk/cs/Format.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.2
+  @version 2.4
 
-  Copyright (c) 2015, Motion Workshop
+  Copyright (c) 2016, Motion Workshop
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ namespace Motion {
         // Create an object representation of the current binary message.
         Format::preview_type preview =
           Format::Preview(data.begin(), data.end());
-       
+
         // Iterate through the list of [id] => PreviewElement objects.
         for (Format::preview_type::iterator itr=preview.begin(); itr!=preview.end(); ++itr) {
           // Use the PreviewElement interface to access format specific data.
@@ -66,7 +66,7 @@ namespace Motion {
       // any unrecoverable conditions.
     }
     @endcode
-    */ 
+    */
     public static class Format {
       /**
         Motion Service streams send a list of data elements. The @ref Format
@@ -290,7 +290,7 @@ namespace Motion {
 
         /**
            Get a set of x, y, and z values of the current un-filtered
-           accelerometer signal. Specified in <em>g</em> where 1 <em>g</em> 
+           accelerometer signal. Specified in <em>g</em> where 1 <em>g</em>
            = <code>-9.8 meters/sec^2</code>.
 
            Domain varies with configuration. Maximum is <code>[-6, 6]</code>
@@ -319,10 +319,10 @@ namespace Motion {
         /**
            Get a set of x, y, and z values of the current un-filtered
            magnetometer signal. Specified in <code>uT</code> (microtesla).
-	   
+
            Domain varies with local magnetic field strength. Expect values
            on <code>[-60, 60]</code> <code>uT</code> (microtesla).
-	  
+
            @return a three element array <code>{x, y, z}</code> of magnetic field
            strength in <code>uT</code> (microtesla) or zeros if there is no
            available data
@@ -517,7 +517,7 @@ namespace Motion {
          @param length the number of values in a single element's float array
          @return a IDictionary<int, List<float>> collection
          representation of the input message
-      */ 
+      */
       private static IDictionary<int, float[]> IdToFloatArray(byte[] buffer, int length) {
         // Use the Dictionary interface, behaves like the C++ std::map.
         IDictionary<int, float[]> result = new Dictionary<int, float[]>();

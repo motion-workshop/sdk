@@ -1,9 +1,9 @@
 /**
   @file    tools/sdk/cs/LuaConsole.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.2
+  @version 2.4
 
-  Copyright (c) 2015, Motion Workshop
+  Copyright (c) 2016, Motion Workshop
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ namespace Motion {
     @code
     //using Motion.SDK;
     // ...
-    
+
     try {
       Client client = new Client("", 32075);
 

@@ -1,9 +1,9 @@
 /**
   @file    tools/sdk/cs/Test.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.2
+  @version 2.4
 
-  Copyright (c) 2015, Motion Workshop
+  Copyright (c) 2016, Motion Workshop
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ namespace Test {
         Console.WriteLine(e.ToString());
       }
     }
-    
+
     static void test_Client(String host, int port) {
       try {
         Client client = new Client(host, port);
@@ -172,7 +172,7 @@ namespace Test {
       try {
         String filename = "../../../../test_data/output.bin";
         Console.WriteLine("test_File, reading data file: \"" + filename + "\"");
-        
+
         File file = new File(filename);
         int i = 0;
         while (i++ < 10) {
@@ -202,7 +202,7 @@ namespace Test {
       test_Client(host, PortSensor);
       test_Client(host, PortRaw);
       test_Client(host, PortConfigurable);
-      
+
       //test_File();
     }
   }

@@ -4,9 +4,9 @@
 
   @file    tools/sdk/cs/Client.cs
   @author  Luke Tokheim, luke@motionnode.com
-  @version 2.2
+  @version 2.4
 
-  Copyright (c) 2015, Motion Workshop
+  Copyright (c) 2016, Motion Workshop
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ namespace Motion {
       @code
       //using Motion.SDK
       // ...
-      
+
       try {
         // Open connection to a Motion Service on the localhost,
         // port 32079.
@@ -71,9 +71,9 @@ namespace Motion {
             while (true) {
               byte[] data = client.readData(data));
               if (null == data) {
-                break;       
+                break;
               }
-    
+
               // Do something useful with the current real-time sample.
               // Probably use the Format class to generate a IDictionary
               // object of [int] => Format.(Preview|Sensor|Raw)Element
@@ -109,27 +109,13 @@ namespace Motion {
         }
 
         try {
-          Socket socket = null;
-          IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
-          foreach (IPAddress ipAddress in ipHostInfo.AddressList) {
-            IPEndPoint ipe = new IPEndPoint(ipAddress, port);
-            if (ProtocolFamily.InterNetworkV6.ToString() == ipe.AddressFamily.ToString()) {
-              continue;
-            }
+          Socket socket = new Socket(
+            AddressFamily.InterNetwork,
+            SocketType.Stream,
+            ProtocolType.Tcp);
 
-            Socket tempSocket = new Socket(
-              ipe.AddressFamily,
-              SocketType.Stream,
-              ProtocolType.Tcp);
-
-            tempSocket.Connect(ipe);
-            if (tempSocket.Connected) {
-              socket = tempSocket;
-              break;
-            }
-          }
-
-          if ((null != socket) && socket.Connected) {
+          socket.Connect(host, port);
+          if (socket.Connected) {
             socket.NoDelay = true;
             m_socket = socket;
             m_connected = true;
@@ -137,10 +123,7 @@ namespace Motion {
             // Read the first message. This is an XML
             // description of the service.
             m_socket.ReceiveTimeout = TimeOutWaitForData * 1000;
-            byte[] message = receive();
-            if (message.Length > 0) {
-              m_description = Encoding.UTF8.GetString(message, 0, message.Length);
-            }
+            receive();
           }
         } catch (SocketException) {
           close();
@@ -191,7 +174,7 @@ namespace Motion {
          Read a single sample of data from the open connection. This
          method will time out and return null if no data comes in
          after time_out_second seconds.
-       
+
          @return a single sample of data, or null if the
          incoming data is invalid
       */
@@ -268,7 +251,7 @@ namespace Motion {
 
         return result;
       }
-      
+
       /**
         @ref Client#waitForData(-1)
       */
@@ -337,7 +320,7 @@ namespace Motion {
       /**
         Create a byte[] from the input string and pass it
         along to the writeData method.
-       
+
         @ref Client#writeData(byte[], int)
       */
       public bool writeData(String message, int time_out_second) {
@@ -432,7 +415,7 @@ namespace Motion {
       private const int TimeOutWaitForData = 5;
 
       /**
-        Set the address to this value if we get an empty string.
+        Default address, access the local host.
       */
       private const String DefaultAddress = "127.0.0.1";
 

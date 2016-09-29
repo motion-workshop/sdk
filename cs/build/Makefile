@@ -1,7 +1,7 @@
 #
 # @file    tools/sdk/cs/build/Makefile
 # @author  Luke Tokheim, luke@motionnode.com
-# @version 2.0
+# @version 2.4
 #
 # Use the Mono toolset to compile the SDK instead of Microsoft tools.
 #
