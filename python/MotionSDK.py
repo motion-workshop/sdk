@@ -1,9 +1,8 @@
 #
-# @file    tools/sdk/python/MotionSDK.py
-# @author  Luke Tokheim, luke@motionnode.com
-# @version 2.2
+# @file    sdk/python/MotionSDK.py
+# @version 2.5
 #
-# Copyright (c) 2015, Motion Workshop
+# Copyright (c) 2017, Motion Workshop
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -68,12 +67,6 @@ class Client:
         s.connect((host, port))
 
         self.__socket = s
-
-        # Set the MSG_WAITALL flag if it exists for this platform
-        try:
-            self.__recv_flags |= socket.MSG_WAITALL
-        except AttributeError:
-            pass
 
         # Read the first message from the service. It is a
         # string description of the remote service.
@@ -186,9 +179,21 @@ class Client:
 
             # Parse the length field, read the raw data field.
             length = struct.unpack("!I", header)[0]
-            data = self.__socket.recv(length, self.__recv_flags)
-            if length != len(data):
-                return None
+
+            # Use one or more socket.recv calls to read the data payload.
+            data = b""
+            while True:
+                message = self.__socket.recv(
+                    length - len(data),
+                    self.__recv_flags)
+                if not message or 0 == len(message):
+                    return None
+
+                data += message
+                if len(data) == length:
+                    break
+                elif len(data) > length:
+                    return None
 
             return data
         except socket.timeout:
@@ -949,21 +954,9 @@ class LuaConsole:
 
 def main():
     """
-    Example usage and test function for the Client, File,
-    Format, and LuaConsole classes.
+    Example usage and test function for the Client, File, Format, and
+    LuaConsole classes.
     """
-
-    # Open take data file in the Sensor format.
-    # Print out the calibrated gyroscope signals.
-    DataFile = "../../test_data/sensor.bin"
-    if None != DataFile:
-        take_file = File(DataFile)
-        while True:
-            data = take_file.readData(9, True)
-            if None == data:
-                break
-
-            print("%s\n" % str(Format.SensorElement(data).getGyroscope()))
 
     # Set the default host and port parameters. The SDK is
     # socket bases so any networked Motion Service is available.
@@ -999,7 +992,7 @@ def main():
     # Connect to the Preview data service.
     # Print out the Euler angle orientation output.
     client = Client(Host, PortPreview)
-    print("Connected to %s:%d" % (Host, PortPreview))
+    print("Connected to {}:{}".format(Host, PortPreview))
 
     if client.waitForData():
         sample_count = 0
@@ -1009,7 +1002,7 @@ def main():
             preview = Format.Preview(data)
             if len(preview) > 0:
                 for item in preview.values():
-                    print("Euler = %s" % str(item.getEuler()))
+                    print("Euler = {}".format(item.getEuler()))
                     break
             else:
                 break
@@ -1020,6 +1013,18 @@ def main():
         print("No current data available, giving up")
 
     client.close()
+
+    # Open take data file in the Sensor format. Print out the calibrated
+    # gyroscope signals.
+    DataFile = "../../test_data/sensor.bin"
+    if None != DataFile:
+        take_file = File(DataFile)
+        while True:
+            data = take_file.readData(9, True)
+            if None == data:
+                break
+
+            print("{} {} {}".format(Format.SensorElement(data).getGyroscope()))
 
 
 if __name__ == "__main__":
