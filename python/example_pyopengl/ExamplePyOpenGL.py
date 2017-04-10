@@ -1,9 +1,8 @@
 #
-# @file    tools/sdk/python/example_pyopengl/ExamplePyOpenGL.py
-# @author  Luke Tokheim, luke@motionnode.com
-# @version 2.2
+# @file    sdk/python/example_pyopengl/ExamplePyOpenGL.py
+# @version 2.5
 #
-# Copyright (c) 2015, Motion Workshop
+# Copyright (c) 2017, Motion Workshop
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,13 +42,13 @@ from OpenGL.GLUT import *
 class ScopedLock:
     def __init__(self, mutex):
         self.__mutex = None
-        
+
         mutex.acquire()
         self.__mutex = mutex
 
     def __del__(self):
         self.__mutex.release()
-        
+
 
 class ExamplePyOpenGL (threading.Thread):
 
@@ -58,7 +57,7 @@ class ExamplePyOpenGL (threading.Thread):
 
         self.__mutex = None
         self.__transform = None
-        
+
         self.__mutex = threading.Lock()
 
     def __del__(self):
@@ -100,8 +99,8 @@ class ExamplePyOpenGL (threading.Thread):
                 # Make a copy of the list, not just reference.
                 transform = self.__transform[:]
             lock = None
-  
-        
+
+
         if (None != transform) and (16 == len(transform)):
             # Transpose matrix for OpenGL column-major order.
             for i in range(0, 4):
@@ -158,7 +157,7 @@ class ExamplePyOpenGL (threading.Thread):
     def run(self):
         Host = ""
         Port = 32079
-        
+
         client = Client(Host, Port)
 
         print "Connected to " + str(Host) + ":" + str(Port)
@@ -169,7 +168,7 @@ class ExamplePyOpenGL (threading.Thread):
                     data = client.readData()
                     if None == data:
                         break
-        
+
                     preview = Format.Preview(data)
                     for key, value in preview.iteritems():
                         transform = value.getMatrix(False)
@@ -178,13 +177,13 @@ class ExamplePyOpenGL (threading.Thread):
                             lock = ScopedLock(self.__mutex)
                             # Make a copy of the list, not just reference.
                             self.__transform = transform[:]
-                            lock = None 
+                            lock = None
 
                             break
 
 
         print "Leaving client thread"
-        
+
 #
 # END class ExamplePyOpenGL
 #
@@ -200,9 +199,9 @@ def main():
 
     example = ExamplePyOpenGL()
     example.start()
-    
+
     example.init()
-    
+
     glutDisplayFunc(example.display)
     glutReshapeFunc(example.reshape)
     glutVisibilityFunc(example.visibility)

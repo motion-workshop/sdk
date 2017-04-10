@@ -1,11 +1,10 @@
 #
 # Simple test program for the Python Motion SDK.
 #
-# @file    tools/sdk/python/test.py
-# @author  Luke Tokheim, luke@motionnode.com
-# @version 2.2
+# @file    sdk/python/test.py
+# @version 2.5
 #
-# Copyright (c) 2015, Motion Workshop
+# Copyright (c) 2017, Motion Workshop
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,12 +43,16 @@ NSample = 10
 def test_Client(host, port):
     client = Client(host, port)
 
-    print "Connected to " + str(host) + ":" + str(port)
+    print("Connected to %s:%d" % (host, port))
 
-    xml_string = "<?xml version=\"1.0\"?><configurable><preview><Gq/></preview><sensor><a/></sensor></configurable>"
+    xml_string = \
+        "<?xml version=\"1.0\"?>" \
+        "<configurable>" \
+        "<preview><Gq/></preview><sensor><a/></sensor>" \
+        "</configurable>"
 
     if client.writeData(xml_string):
-        print "Sent active channel definition to Configurable service"
+        print("Sent active channel definition to Configurable service")
 
     if client.waitForData():
         sample_count = 0
@@ -57,39 +60,39 @@ def test_Client(host, port):
             data = client.readData()
             if None == data:
                 break
-            
+
             if PortPreview == port:
                 container = Format.Preview(data)
                 for key in container:
-                    q = container[key].getQuaternion(False)
+                    Gq = container[key].getQuaternion(False)
 
-                    print "q(" + str(key) + ") = (" + str(q[0]) + ", " + str(q[1]) + "i, " + str(q[2]) + "j, " + str(q[3]) + "k)"
+                    print("Gq({}) = ({}, {}i, {}j, {}k)".format(key, *Gq))
 
             if PortSensor == port:
                 container = Format.Sensor(data)
                 for key in container:
                     a = container[key].getAccelerometer()
 
-                    print "a(" + str(key) + ") = (" + str(a[0]) + ", " + str(a[1]) + ", " + str(a[2]) + ") g"
+                    print("a({}) = ({}, {}, {})".format(key, *a))
 
             if PortRaw == port:
                 container = Format.Raw(data)
                 for key in container:
-                    a = container[key].getAccelerometer()
+                    A = container[key].getAccelerometer()
 
-                    print "a(" + str(key) + ") = (" + str(a[0]) + ", " + str(a[1]) + ", " + str(a[2]) + ")"
+                    print("A({}) = ({}, {}, {})".format(key, *A))
 
             if PortConfigurable == port:
                 container = Format.Configurable(data)
                 for key in container:
-                    line = "data(" + str(key) + ") = ("
+                    line = "data({}) = (".format(key)
                     for i in range(container[key].size()):
                         if i > 0:
                             line += ", "
-                        line += str(container[key].value(i))
+                        line += "{}".format(container[key].value(i))
                     line += ")"
 
-                    print line
+                    print(line)
 
             sample_count += 1
 
@@ -97,7 +100,7 @@ def test_Client(host, port):
 def test_LuaConsole(host, port):
     client = Client(host, port)
 
-    print("Connected to " + str(host) + ":" + str(port))
+    print("Connected to %s:%d" % (host, port))
 
     #
     # General Lua scripting interface.
@@ -114,19 +117,18 @@ def test_LuaConsole(host, port):
       "   print('Failed to start reading')" \
       " end"
 
-    print LuaConsole.SendChunk(client, lua_chunk, 5)
+    print(LuaConsole.SendChunk(client, lua_chunk, 5))
 
-    # Scripting language compatibility class. Translate
-    # Python calls into Lua calls and send them to the
-    # console service.
+    # Scripting language compatibility class. Translate Python calls into Lua
+    # calls and send them to the console service.
     node = LuaConsole.Node(client)
-    print "node.is_reading() = " + str(node.is_reading())
+    print("node.is_reading() = {}".format(node.is_reading()))
 
 
 def test_File():
     filename = "../../test_data/sensor.bin";
-    
-    print "reading take data file: \"" + filename + "\""
+
+    print("reading take data filename = \"{}\"".format(filename))
 
     take_file = File(filename)
     while True:
@@ -134,13 +136,12 @@ def test_File():
         if None == data:
             break
 
-        print Format.SensorElement(data).getAccelerometer()
+        print(Format.SensorElement(data).getAccelerometer())
 
 
 def main(argv):
-    # Set the default host name parameter. The SDK is
-    # socket based so any networked Motion Service is
-    # available.
+    # Set the default host name parameter. The SDK is socket based so any
+    # networked Motion Service is available.
     host = ""
     if len(argv) > 1:
         host = argv[1]
@@ -152,7 +153,8 @@ def main(argv):
     test_Client(host, PortRaw)
     test_Client(host, PortConfigurable)
 
-    test_File()
+    # Requires a data file. Do not test by default.
+    #test_File()
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
