@@ -1,9 +1,8 @@
 #
-# @file    tools/sdk/python/build/setup.py
-# @author  Luke Tokheim, luke@motionnode.com
-# @version 2.2
+# @file    sdk/python/build/setup.py
+# @version 2.5
 #
-# Copyright (c) 2015, Motion Workshop
+# Copyright (c) 2017, Motion Workshop
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,18 +27,22 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-import ez_setup
-ez_setup.use_setuptools()
-
 from setuptools import setup, find_packages
 
-setup(name = 'MotionSDK',
-      version = '2.2',
-      packages = find_packages(),
-      py_modules = ['MotionSDK'],
-      description = 'Motion Software Development Kit (SDK)',
-      author = 'Motion Workshop',
-      author_email = 'info@motionnode.com',
-      url = 'http://www.motionnode.com/sdk.html',
-      license = 'Proprietary'
-      )
+setup(
+    name="MotionSDK",
+    version="2.5.0",
+    packages=find_packages(),
+    py_modules=["MotionSDK"],
+    author="Motion Workshop",
+    author_email="info@motionshadow.com",
+    url="https://github.com/motion-workshop/sdk",
+    license="BSD",
+    description="Motion Software Development Kit (SDK)",
+    long_description= \
+        "Provides real-time access to the outputs of the Motion Service. This" \
+        " includes 3d rotation output as well as the raw and calibrated" \
+        " accelerometer, gyroscope, and magnetometer sensor signals." \
+        " Supports both Shadow and MotionNode inertial sensing systems.",
+    platforms="any"
+)
