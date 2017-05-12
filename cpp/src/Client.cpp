@@ -653,7 +653,7 @@ unsigned Client::send(const std::string &data, bool &send_timed_out)
                       MSG_NOSIGNAL);
   if (-1 == result) {
     const int error_code = ERROR_CODE;
-    if (ETIMEDOUT == error_code) {
+    if (ETIMEDOUT == error_code || EAGAIN == error_code) {
       // Connection timed out.
       // A connection attempt failed because the connected party did not
       // properly respond after a period of time, or the established connection
@@ -692,7 +692,7 @@ unsigned Client::receive(std::string &data, bool &receive_timed_out)
                       MSG_NOSIGNAL);
   if (-1 == result) {
     const int error_code = ERROR_CODE;
-    if (ETIMEDOUT == error_code) {
+    if (ETIMEDOUT == error_code || EAGAIN == error_code) {
       // Connection timed out.
       // A connection attempt failed because the connected party did not
       // properly respond after a period of time, or the established connection
