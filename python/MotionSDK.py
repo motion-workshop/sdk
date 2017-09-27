@@ -241,7 +241,7 @@ class Client:
 
         try:
             list, _, _ = select.select(
-                [fd], [], [], self.__time_out_second_send)
+                [fd], [], [], self.__time_out_second)
             for s in list:
                 if fd == s:
                     return True
